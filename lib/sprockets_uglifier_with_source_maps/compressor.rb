@@ -15,7 +15,14 @@ module SprocketsUglifierWithSM
       data = input.fetch(:data)
       name = input.fetch(:name)
 
-      if /sourceMappingURL=data:application\/json;charset=utf-8;base64/.match(data).present?
+      if name.include? '-bundle'
+        # Each webpack bundle already has a corresponding sourcemap, so let's use that
+        sourcemap_json = File.read("#{input[:filename]}.map").to_json
+
+        # Each webpack bundle is already minified, so let's only strip the existing
+        # sourcemap reference; we'll replace it with a fingerprinted version below.
+        compressed_data = data.sub(/\/\/# sourceMappingURL=.*$/, '').rstrip
+      elsif /sourceMappingURL=data:application\/json;charset=utf-8;base64/.match(data).present?
         extra_options = {
           source_map: {
             :input_source_map => 'inline',
