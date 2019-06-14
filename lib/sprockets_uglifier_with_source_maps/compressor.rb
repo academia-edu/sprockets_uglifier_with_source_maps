@@ -17,7 +17,7 @@ module SprocketsUglifierWithSM
 
       if name.include? '-bundle'
         # Each webpack bundle already has a corresponding sourcemap, so let's use that
-        sourcemap_json = File.read("#{input[:filename]}.map").to_json
+        sourcemap_json = JSON.parse(File.read("#{input[:filename]}.map"))
 
         # Each webpack bundle is already minified, so let's only strip the existing
         # sourcemap reference; we'll replace it with a fingerprinted version below.
